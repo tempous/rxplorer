@@ -9,13 +9,9 @@ namespace LiteExplorer.ViewModels
 
         public string Title
         {
-            get { return title; }
-            set
-            {
-                title = value;
-                OnPropertyChanged();
-            }
-        } 
+            get => title;
+            set => SetValue(ref title, value);
+        }
         #endregion
     }
 }
