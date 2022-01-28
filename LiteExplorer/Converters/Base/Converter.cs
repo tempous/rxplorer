@@ -8,9 +8,6 @@ namespace LiteExplorer.Converters.Base
     {
         public abstract object Convert(object value, Type targetType, object parameter, CultureInfo culture);
 
-        public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotSupportedException();
-        }
+        public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotSupportedException();
     }
 }
