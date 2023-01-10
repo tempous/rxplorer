@@ -140,24 +140,17 @@ namespace LiteExplorer.ViewModels
         {
             foreach (var item in Directory.GetFileSystemEntries(CurrentPath))
             {
-                var isFolder = Directory.Exists(item);
+                var fileExists = File.Exists(item);
 
-                var fileSystemObject = new FileSystemObject()
+                FileSystemObjects.Add(new FileSystemObject()
                 {
-                    Image = isFolder
-                        ? FolderManager.GetImageSource(item, Enums.ItemState.Undefined)
-                        : FileManager.GetImageSource(item),
+                    Image = fileExists
+                        ? FileManager.GetImageSource(item)
+                        : FolderManager.GetImageSource(item, Enums.ItemState.Undefined),
                     Name = Path.GetFileName(item),
-                    Path = item
-                };
-
-                if (!isFolder)
-                {
-                    var fi = new FileInfo(item);
-                    if (fi.Exists) fileSystemObject.Size = fi.Length;
-                }
-
-                FileSystemObjects.Add(fileSystemObject);
+                    Path = item,
+                    Size = fileExists ? new FileInfo(item).Length : 0
+                });
             }
         }
 
