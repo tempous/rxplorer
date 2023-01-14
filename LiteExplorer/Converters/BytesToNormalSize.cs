@@ -4,11 +4,11 @@ using System.Globalization;
 
 namespace LiteExplorer.Converters
 {
-    class Space : Converter
+    internal class BytesToNormalSize : Converter
     {
-        const double BytesInKB = 1024;
-        const double BytesInMB = 1048576;
-        const double BytesInGB = 1073741824;
+        private const double BytesInKB = 1024;
+        private const double BytesInMB = 1048576;
+        private const double BytesInGB = 1073741824;
 
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

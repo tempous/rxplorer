@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace LiteExplorer.Converters
 {
-    class BoolToVisibility : Converter
+    internal class BoolToVisibility : Converter
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

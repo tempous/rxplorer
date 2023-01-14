@@ -16,14 +16,13 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <ui:Button
                 Grid.Column="0"
                 Command="{Binding BackCmd}"
                 CommandParameter="{Binding CurrentPath}"
-                Icon="ArrowLeft48"
-                ToolTip="Back" />
+                Icon="ArrowLeft28"
+                ToolTip="Back (Backspace)" />
             <ui:TextBox
                 Grid.Column="1"
                 HorizontalContentAlignment="Stretch"
@@ -32,22 +31,20 @@
             <ui:Button
                 Grid.Column="2"
                 Command="{Binding RunCmd}"
-                CommandParameter="notepad"
-                Icon="Notepad28"
-                ToolTip="Notepad" />
-            <ui:Button
-                Grid.Column="3"
-                Command="{Binding RunCmd}"
                 CommandParameter="cmd"
                 Icon="Send28"
                 ToolTip="Command prompt" />
         </Grid>
-        <ListBox
+        <ListView
             x:Name="items"
             Grid.Row="1"
             ItemsSource="{Binding FileSystemObjects}"
             SelectedItem="{Binding CurrentItem}"
-            SelectionMode="Extended">
+            SelectionMode="Extended"
+            VirtualizingPanel.CacheLength="5"
+            VirtualizingPanel.CacheLengthUnit="Item"
+            VirtualizingPanel.ScrollUnit="Pixel"
+            VirtualizingPanel.VirtualizationMode="Recycling">
 
             <b:Interaction.Triggers>
                 <b:EventTrigger EventName="MouseDoubleClick">
@@ -55,7 +52,7 @@
                 </b:EventTrigger>
             </b:Interaction.Triggers>
 
-            <ListBox.InputBindings>
+            <ListView.InputBindings>
                 <KeyBinding
                     Command="{Binding OpenCmd}"
                     CommandParameter="{Binding CurrentItem}"
@@ -68,18 +65,17 @@
                     Command="{Binding BackCmd}"
                     CommandParameter="{Binding CurrentPath}"
                     Gesture="Backspace" />
-            </ListBox.InputBindings>
+            </ListView.InputBindings>
 
-            <ListBox.ItemTemplate>
+            <ListView.ItemTemplate>
                 <DataTemplate>
-
                     <DataTemplate.Resources>
-                        <c:Percent x:Key="PercentConverter" />
-                        <c:Space x:Key="SpaceConverter" />
+                        <c:UsedPercent x:Key="UsedPercentConverter" />
+                        <c:BytesToNormalSize x:Key="BytesToNormalSizeConverter" />
+                        <c:PercentToColor x:Key="PercentToColorConverter" />
                     </DataTemplate.Resources>
 
                     <Grid>
-
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="5*" />
                             <ColumnDefinition Width="*" />
@@ -110,26 +106,22 @@
                         </Grid>
                         <Label Grid.Column="1" Content="{Binding Format}" />
                         <Label Grid.Column="2" Content="{Binding Type}" />
+                        <Label Grid.Column="3" Content="{Binding TotalSpace, Converter={StaticResource BytesToNormalSizeConverter}}" />
                         <Label
-                            x:Name="totalSpace"
-                            Grid.Column="3"
-                            Content="{Binding TotalSpace, Converter={StaticResource SpaceConverter}}" />
-                        <Label
-                            x:Name="usedSpace"
                             Grid.Column="4"
-                            Content="{Binding Size, Converter={StaticResource SpaceConverter}}"
-                            Foreground="SlateGray" />
+                            Content="{Binding Size, Converter={StaticResource BytesToNormalSizeConverter}}"
+                            Foreground="{Binding Foreground, ElementName=usedPercent}" />
                         <Label
-                            x:Name="availableSpace"
                             Grid.Column="5"
-                            Content="{Binding FreeSpace, Converter={StaticResource SpaceConverter}}"
-                            Foreground="YellowGreen" />
+                            Content="{Binding FreeSpace, Converter={StaticResource BytesToNormalSizeConverter}}"
+                            Foreground="{Binding Background, ElementName=usedPercent}" />
                         <ProgressBar
+                            x:Name="usedPercent"
                             Grid.Column="6"
-                            Background="YellowGreen"
-                            Foreground="SlateGray">
+                            Background="{Binding Value, RelativeSource={RelativeSource Self}, Converter={StaticResource PercentToColorConverter}}"
+                            Foreground="Gray">
                             <ProgressBar.Value>
-                                <MultiBinding Converter="{StaticResource PercentConverter}">
+                                <MultiBinding Converter="{StaticResource UsedPercentConverter}">
                                     <Binding Path="TotalSpace" />
                                     <Binding Path="Size" />
                                 </MultiBinding>
@@ -137,8 +129,8 @@
                         </ProgressBar>
                     </Grid>
                 </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+            </ListView.ItemTemplate>
+        </ListView>
 
     </Grid>
 </UserControl>

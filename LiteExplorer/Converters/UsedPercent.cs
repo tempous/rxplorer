@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace LiteExplorer.Converters
 {
-    internal class Percent : MultiConverter
+    internal class UsedPercent : MultiConverter
     {
         public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
