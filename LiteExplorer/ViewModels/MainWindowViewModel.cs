@@ -44,18 +44,41 @@ namespace LiteExplorer.ViewModels
         private void OnCloseAppCmdExecuted(object p) => Application.Current.Shutdown();
         #endregion
 
+        #region AddTab
+        public ICommand AddTabCmd { get; }
+        private bool CanAddTabCmdExecute(object p) => true;
+        private void OnAddTabCmdExecuted(object p)
+        {
+            var newTab = new TabItemViewModel();
+            TabItems.Add(newTab);
+            CurrentTabItem = newTab;
+        }
+        #endregion
+
+        #region CloseTab
+        public ICommand CloseTabCmd { get; }
+        private bool CanCloseTabCmdExecute(object p) => true;
+        private void OnCloseTabCmdExecuted(object p)
+        {
+            if (p is TabItemViewModel closeTab)
+            {
+                TabItems.Remove(closeTab);
+                CurrentTabItem = TabItems.LastOrDefault();
+            }
+        }
+        #endregion
+
         #endregion
 
         #region Constructor
         public MainWindowViewModel()
         {
             TabItems.Add(new TabItemViewModel());
-            TabItems.Add(new TabItemViewModel());
-            TabItems.Add(new TabItemViewModel());
-
             CurrentTabItem = TabItems.FirstOrDefault();
 
             CloseAppCmd = new ActionCommand(OnCloseAppCmdExecuted, CanCloseAppCmdExecute);
+            AddTabCmd = new ActionCommand(OnAddTabCmdExecuted, CanAddTabCmdExecute);
+            CloseTabCmd = new ActionCommand(OnCloseTabCmdExecuted, CanCloseTabCmdExecute);
         }
 
         #endregion

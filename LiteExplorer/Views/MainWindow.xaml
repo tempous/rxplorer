@@ -12,16 +12,25 @@
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen">
 
-    <Window.DataContext>
+    <ui:UiWindow.DataContext>
         <vm:MainWindowViewModel />
-    </Window.DataContext>
+    </ui:UiWindow.DataContext>
 
-    <Window.InputBindings>
+    <ui:UiWindow.InputBindings>
         <KeyBinding
-            Key="W"
+            Key="Q"
             Command="{Binding CloseAppCmd}"
             Modifiers="Ctrl" />
-    </Window.InputBindings>
+        <KeyBinding
+            Key="T"
+            Command="{Binding AddTabCmd}"
+            Modifiers="Ctrl" />
+        <KeyBinding
+            Key="W"
+            Command="{Binding CloseTabCmd}"
+            CommandParameter="{Binding CurrentTabItem}"
+            Modifiers="Ctrl" />
+    </ui:UiWindow.InputBindings>
 
     <DockPanel>
         <ui:TitleBar
@@ -44,9 +53,67 @@
         </StatusBar>
 
         <TabControl ItemsSource="{Binding TabItems}" SelectedItem="{Binding CurrentTabItem}">
+            <TabControl.Template>
+                <ControlTemplate TargetType="{x:Type TabControl}">
+                    <Grid KeyboardNavigation.TabNavigation="Local">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <StackPanel
+                            Grid.Row="0"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                            <TabPanel
+                                x:Name="HeaderPanel"
+                                Grid.Row="0"
+                                Margin="0"
+                                Panel.ZIndex="1"
+                                Background="Transparent"
+                                IsItemsHost="True"
+                                KeyboardNavigation.TabIndex="1" />
+                            <ui:Button
+                                Margin="5,0"
+                                Padding="5"
+                                Command="{Binding AddTabCmd}"
+                                Icon="Add28"
+                                ToolTip="Add new tab (Ctrl+T)" />
+                        </StackPanel>
+                        <Border
+                            x:Name="Border"
+                            Grid.Row="1"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="0,4,4,4"
+                            KeyboardNavigation.DirectionalNavigation="Contained"
+                            KeyboardNavigation.TabIndex="2"
+                            KeyboardNavigation.TabNavigation="Local">
+                            <ContentPresenter
+                                x:Name="PART_SelectedContentHost"
+                                Margin="0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                ContentSource="SelectedContent" />
+                        </Border>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Disabled">
+                                    <Storyboard>
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Border.BorderBrush).                     (SolidColorBrush.Color)">
+                                            <EasingColorKeyFrame KeyTime="0" Value="#FFAAAAAA" />
+                                        </ColorAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Grid>
+                </ControlTemplate>
+            </TabControl.Template>
+
             <TabControl.ItemTemplate>
                 <DataTemplate>
-                    <Grid>
+                    <Grid ToolTip="{Binding CurrentName}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
@@ -56,10 +123,14 @@
                             Grid.Column="1"
                             Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
                             Padding="1"
-                            Icon="Dismiss20" />
+                            Command="{Binding DataContext.CloseTabCmd, RelativeSource={RelativeSource AncestorType=ui:UiWindow}}"
+                            CommandParameter="{Binding}"
+                            Icon="Dismiss20"
+                            ToolTip="Close tab (Ctrl+W)" />
                     </Grid>
                 </DataTemplate>
             </TabControl.ItemTemplate>
+
             <TabControl.ContentTemplate>
                 <DataTemplate>
                     <uc:TabItemContent />
