@@ -57,7 +57,7 @@ namespace LiteExplorer.ViewModels
 
         #region CloseTab
         public ICommand CloseTabCmd { get; }
-        private bool CanCloseTabCmdExecute(object p) => true;
+        private bool CanCloseTabCmdExecute(object p) => TabItems.Count > 1;
         private void OnCloseTabCmdExecuted(object p)
         {
             if (p is TabItemViewModel closeTab)
