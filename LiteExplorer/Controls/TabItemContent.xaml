@@ -19,6 +19,7 @@
             </Grid.ColumnDefinitions>
             <ui:Button
                 Grid.Column="0"
+                Height="{Binding ActualWidth, RelativeSource={RelativeSource Self}}"
                 Command="{Binding BackCmd}"
                 CommandParameter="{Binding CurrentPath}"
                 Icon="ArrowLeft28"
@@ -26,15 +27,17 @@
             <ui:TextBox
                 Grid.Column="1"
                 HorizontalContentAlignment="Stretch"
-                Icon="Home48"
+                Icon="Open28"
                 Text="{Binding CurrentPath, Mode=OneWay}" />
             <ui:Button
                 Grid.Column="2"
+                Height="{Binding ActualWidth, RelativeSource={RelativeSource Self}}"
                 Command="{Binding RunCmd}"
                 CommandParameter="cmd"
                 Icon="Send28"
                 ToolTip="Command prompt" />
         </Grid>
+
         <ListView
             x:Name="items"
             Grid.Row="1"
