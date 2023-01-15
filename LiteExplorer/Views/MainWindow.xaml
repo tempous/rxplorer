@@ -64,25 +64,25 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <StackPanel
-                            Grid.Row="0"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
-                            <TabPanel
-                                x:Name="HeaderPanel"
-                                Grid.Row="0"
-                                Margin="0"
-                                Panel.ZIndex="1"
-                                Background="Transparent"
-                                IsItemsHost="True"
-                                KeyboardNavigation.TabIndex="1" />
-                            <ui:Button
-                                Margin="5,0"
-                                Padding="5"
-                                Command="{Binding AddTabCmd}"
-                                Icon="Add28"
-                                ToolTip="Add new tab (Ctrl+T)" />
-                        </StackPanel>
+
+                        <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Auto">
+                            <StackPanel Orientation="Horizontal">
+                                <TabPanel
+                                    x:Name="HeaderPanel"
+                                    Margin="0"
+                                    Panel.ZIndex="1"
+                                    Background="Transparent"
+                                    IsItemsHost="True"
+                                    KeyboardNavigation.TabIndex="1" />
+                                <ui:Button
+                                    Margin="5,0"
+                                    Padding="5"
+                                    Command="{Binding AddTabCmd}"
+                                    Icon="Add28"
+                                    ToolTip="Add new tab (Ctrl+T)" />
+                            </StackPanel>
+                        </ScrollViewer>
+
                         <Border
                             x:Name="Border"
                             Grid.Row="1"
@@ -133,13 +133,13 @@
                                         CornerRadius="4,4,0,0">
 
                                         <ContentPresenter
-                                                x:Name="ContentSite"
-                                                Grid.Column="0"
-                                                Margin="0"
-                                                HorizontalAlignment="Stretch"
-                                                VerticalAlignment="Center"
-                                                ContentSource="Header"
-                                                RecognizesAccessKey="True" />
+                                            x:Name="ContentSite"
+                                            Grid.Column="0"
+                                            Margin="0"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Center"
+                                            ContentSource="Header"
+                                            RecognizesAccessKey="True" />
                                     </Border>
 
                                     <VisualStateManager.VisualStateGroups>
