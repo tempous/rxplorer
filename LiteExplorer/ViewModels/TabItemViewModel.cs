@@ -2,6 +2,7 @@
 using LiteExplorer.Extensions;
 using LiteExplorer.Models;
 using LiteExplorer.ViewModels.Base;
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -52,7 +53,7 @@ namespace LiteExplorer.ViewModels
         #region Run
         public ICommand RunCmd { get; }
         private bool CanRunCmdExecute(object p) => true;
-        private void OnRunCmdExecuted(object p) => Process.Start(new ProcessStartInfo(p.ToString()) { WorkingDirectory = CurrentPath ?? "C:\\Windows\\System32" });
+        private void OnRunCmdExecuted(object p) => Process.Start(new ProcessStartInfo(p.ToString()) { WorkingDirectory = CurrentPath ?? Environment.SystemDirectory });
         #endregion
 
         #region Open
@@ -125,7 +126,7 @@ namespace LiteExplorer.ViewModels
 
         private void GetItems()
         {
-            foreach (var item in Directory.GetFileSystemEntries(CurrentPath))
+            foreach (var item in Directory.EnumerateFileSystemEntries(CurrentPath))
             {
                 var fileExists = File.Exists(item);
 
