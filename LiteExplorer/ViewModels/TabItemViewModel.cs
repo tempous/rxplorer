@@ -6,6 +6,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Windows;
 using System.Windows.Input;
 
 namespace LiteExplorer.ViewModels
@@ -91,6 +92,16 @@ namespace LiteExplorer.ViewModels
         private void OnBackCmdExecuted(object p) => OpenCmd.Execute(p);
         #endregion
 
+        #region ShowMessage
+        public ICommand ShowMessageCmd { get; }
+        private bool CanShowMessageCmdExecute(object p) => true;
+        private void OnShowMessageCmdExecuted(object p)
+        {
+            if (p is FileSystemObject fso)
+                MessageBox.Show(fso.Path, fso.Name);
+        }
+        #endregion
+
         #endregion
 
         #region Constructor
@@ -99,6 +110,7 @@ namespace LiteExplorer.ViewModels
             RunCmd = new ActionCommand(OnRunCmdExecuted, CanRunCmdExecute);
             OpenCmd = new ActionCommand(OnOpenCmdExecuted, CanOpenCmdExecute);
             BackCmd = new ActionCommand(OnBackCmdExecuted, CanBackCmdExecute);
+            ShowMessageCmd = new ActionCommand(OnShowMessageCmdExecuted, CanShowMessageCmdExecute);
 
             OpenCmd.Execute(CurrentPath);
         }
