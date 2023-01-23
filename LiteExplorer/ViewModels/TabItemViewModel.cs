@@ -4,15 +4,24 @@ using LiteExplorer.Models;
 using LiteExplorer.ViewModels.Base;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace LiteExplorer.ViewModels
 {
     internal class TabItemViewModel : ViewModel
     {
+        #region Private fields
+
+        private readonly BackgroundWorker worker;
+
+        #endregion
+
         #region Properties
 
         #region CurrentName
@@ -42,6 +51,16 @@ namespace LiteExplorer.ViewModels
         {
             get => currentItem;
             set => SetValue(ref currentItem, value);
+        }
+        #endregion
+
+        #region ProgressPercent
+        private double progressPercent;
+
+        public double ProgressPercent
+        {
+            get => progressPercent;
+            set => SetValue(ref progressPercent, value);
         }
         #endregion
 
@@ -80,10 +99,12 @@ namespace LiteExplorer.ViewModels
                 CurrentPath = Directory.GetParent(path)?.FullName;
             }
 
-            FileSystemObjects.Clear();
-
-            if (CurrentPath == null) GetDrives(); else GetItems();
+            if (worker.IsBusy)
+                worker.CancelAsync();
+            else
+                Reset();
         }
+
         #endregion
 
         #region Back
@@ -107,6 +128,16 @@ namespace LiteExplorer.ViewModels
         #region Constructor
         public TabItemViewModel()
         {
+            worker = new BackgroundWorker
+            {
+                WorkerSupportsCancellation = true,
+                WorkerReportsProgress = true
+            };
+
+            worker.DoWork += worker_DoWork;
+            worker.ProgressChanged += worker_ProgressChanged;
+            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
+
             RunCmd = new ActionCommand(OnRunCmdExecuted, CanRunCmdExecute);
             OpenCmd = new ActionCommand(OnOpenCmdExecuted, CanOpenCmdExecute);
             BackCmd = new ActionCommand(OnBackCmdExecuted, CanBackCmdExecute);
@@ -116,42 +147,81 @@ namespace LiteExplorer.ViewModels
         }
         #endregion
 
-        #region Methods
+        #region Private methods
 
-        private void GetDrives()
+        private void Reset()
         {
-            foreach (var drive in DriveInfo.GetDrives())
+            //ProgressPercent = 0;
+            FileSystemObjects.Clear();
+            worker.RunWorkerAsync();
+        }
+
+        private void worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (worker.CancellationPending == true)
             {
-                FileSystemObjects.Add(new FileSystemObject()
+                e.Cancel = true;
+                return;
+            }
+
+            if (CurrentPath == null)
+            {
+                var driveCount = Directory.GetLogicalDrives().Count();
+
+                foreach (var drive in DriveInfo.GetDrives())
                 {
-                    Image = FolderManager.GetImageSource(drive.RootDirectory.FullName, Enums.ItemState.Undefined),
-                    Name = drive.VolumeLabel,
-                    Path = drive.Name,
-                    TotalSpace = drive.TotalSize,
-                    FreeSpace = drive.TotalFreeSpace,
-                    Size = drive.TotalSize - drive.TotalFreeSpace,
-                    Format = drive.DriveFormat,
-                    Type = drive.DriveType.ToString()
-                });
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        FileSystemObjects.Add(new FileSystemObject()
+                        {
+                            Image = FolderManager.GetImageSource(drive.RootDirectory.FullName, Enums.ItemState.Undefined),
+                            Name = drive.VolumeLabel,
+                            Path = drive.Name,
+                            TotalSpace = drive.TotalSize,
+                            FreeSpace = drive.TotalFreeSpace,
+                            Size = drive.TotalSize - drive.TotalFreeSpace,
+                            Format = drive.DriveFormat,
+                            Type = drive.DriveType.ToString()
+                        });
+
+                        worker.ReportProgress((int)((double)FileSystemObjects.Count / driveCount * 100));
+                    }, DispatcherPriority.Background);
+                }
+            }
+            else
+            {
+                var entryCount = new DirectoryInfo(CurrentPath).EnumerateFileSystemInfos().Count();
+
+                foreach (var item in Directory.EnumerateFileSystemEntries(CurrentPath))
+                {
+                    var fileExists = File.Exists(item);
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        FileSystemObjects.Add(new FileSystemObject()
+                        {
+                            Image = fileExists
+                                ? FileManager.GetImageSource(item)
+                                : FolderManager.GetImageSource(item, Enums.ItemState.Undefined),
+                            Name = Path.GetFileName(item),
+                            Path = item,
+                            Size = fileExists ? new FileInfo(item).Length : 0
+                        });
+
+                        worker.ReportProgress((int)((double)FileSystemObjects.Count / entryCount * 100));
+                    }, DispatcherPriority.Background);
+                }
             }
         }
 
-        private void GetItems()
+        private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            foreach (var item in Directory.EnumerateFileSystemEntries(CurrentPath))
-            {
-                var fileExists = File.Exists(item);
+            ProgressPercent = e.ProgressPercentage;
+        }
 
-                FileSystemObjects.Add(new FileSystemObject()
-                {
-                    Image = fileExists
-                        ? FileManager.GetImageSource(item)
-                        : FolderManager.GetImageSource(item, Enums.ItemState.Undefined),
-                    Name = Path.GetFileName(item),
-                    Path = item,
-                    Size = fileExists ? new FileInfo(item).Length : 0
-                });
-            }
+        private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Cancelled) Reset();
         }
 
         #endregion

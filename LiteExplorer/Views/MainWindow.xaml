@@ -51,6 +51,9 @@
             <StatusBarItem>
                 <Label Content="{Binding CurrentItem.Name}" ContentStringFormat="Current: {0}" />
             </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right">
+                <ProgressBar Value="{Binding ProgressPercent}" Foreground="LightGray" Width="150"/>
+            </StatusBarItem>
         </StatusBar>
 
         <TabControl ItemsSource="{Binding TabItems}" SelectedItem="{Binding CurrentTabItem}">
