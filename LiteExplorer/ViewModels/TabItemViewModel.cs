@@ -14,7 +14,7 @@ using System.Windows.Threading;
 
 namespace LiteExplorer.ViewModels
 {
-    internal class TabItemViewModel : ViewModel
+    internal class TabItemViewModel : ViewModel, IDisposable
     {
         #region Private fields
 
@@ -102,7 +102,7 @@ namespace LiteExplorer.ViewModels
             if (worker.IsBusy)
                 worker.CancelAsync();
             else
-                Reset();
+                OpenPath();
         }
 
         #endregion
@@ -145,13 +145,20 @@ namespace LiteExplorer.ViewModels
 
             OpenCmd.Execute(CurrentPath);
         }
+
+        public void Dispose()
+        {
+            worker.DoWork -= worker_DoWork;
+            worker.ProgressChanged -= worker_ProgressChanged;
+            worker.RunWorkerCompleted -= worker_RunWorkerCompleted;
+            worker.Dispose();
+        }
         #endregion
 
         #region Private methods
 
-        private void Reset()
+        private void OpenPath()
         {
-            //ProgressPercent = 0;
             FileSystemObjects.Clear();
             worker.RunWorkerAsync();
         }
@@ -221,7 +228,7 @@ namespace LiteExplorer.ViewModels
 
         private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (e.Cancelled) Reset();
+            if (e.Cancelled) OpenPath();
         }
 
         #endregion

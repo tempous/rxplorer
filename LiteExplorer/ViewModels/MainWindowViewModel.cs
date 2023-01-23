@@ -62,6 +62,7 @@ namespace LiteExplorer.ViewModels
         {
             if (p is TabItemViewModel closeTab)
             {
+                closeTab.Dispose();
                 TabItems.Remove(closeTab);
                 CurrentTabItem = TabItems.LastOrDefault();
             }
