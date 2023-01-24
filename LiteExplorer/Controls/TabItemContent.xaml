@@ -49,7 +49,26 @@
             VirtualizingPanel.ScrollUnit="Pixel"
             VirtualizingPanel.VirtualizationMode="Recycling">
 
-            <ListView.ContextMenu>
+            <ListView.Resources>
+                <ContextMenu x:Key="ItemContextMenu">
+                    <MenuItem
+                        Command="{Binding DataContext.OpenCmd, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ListView}, Path=SelectedItem}"
+                        Header="Open" />
+                    <MenuItem
+                        Command="{Binding DataContext.ShowMessageCmd, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ListView}, Path=SelectedItem}"
+                        Header="Show message" />
+                </ContextMenu>
+            </ListView.Resources>
+
+            <ListView.ItemContainerStyle>
+                <Style BasedOn="{StaticResource {x:Type ListViewItem}}" TargetType="{x:Type ListViewItem}">
+                    <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}" />
+                </Style>
+            </ListView.ItemContainerStyle>
+
+            <!--<ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem
                         Command="{Binding OpenCmd}"
@@ -60,7 +79,7 @@
                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"
                         Header="Show message" />
                 </ContextMenu>
-            </ListView.ContextMenu>
+            </ListView.ContextMenu>-->
 
             <!--<b:Interaction.Triggers>
                 <b:EventTrigger EventName="MouseDoubleClick">
@@ -154,6 +173,5 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-
     </Grid>
 </UserControl>
