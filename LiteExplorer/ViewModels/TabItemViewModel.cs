@@ -165,18 +165,18 @@ namespace LiteExplorer.ViewModels
 
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (worker.CancellationPending == true)
-            {
-                e.Cancel = true;
-                return;
-            }
-
             if (CurrentPath == null)
             {
                 var driveCount = Directory.GetLogicalDrives().Count();
 
                 foreach (var drive in DriveInfo.GetDrives())
                 {
+                    if (worker.CancellationPending == true)
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
+
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         FileSystemObjects.Add(new FileSystemObject()
@@ -201,6 +201,12 @@ namespace LiteExplorer.ViewModels
 
                 foreach (var item in Directory.EnumerateFileSystemEntries(CurrentPath))
                 {
+                    if (worker.CancellationPending == true)
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
+
                     var fileExists = File.Exists(item);
 
                     Application.Current.Dispatcher.Invoke(() =>
