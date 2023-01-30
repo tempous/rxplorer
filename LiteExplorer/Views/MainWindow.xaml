@@ -45,6 +45,9 @@
             Padding="1"
             DataContext="{Binding CurrentTabItem}"
             DockPanel.Dock="Bottom">
+            <StatusBar.Resources>
+                <c:ValueToVisibility x:Key="ValueToVisibilityConverter" />
+            </StatusBar.Resources>
             <StatusBarItem>
                 <Label Content="{Binding FileSystemObjects.Count}" ContentStringFormat="Items: {0}" />
             </StatusBarItem>
@@ -52,7 +55,11 @@
                 <Label Content="{Binding CurrentItem.Name}" ContentStringFormat="Current: {0}" />
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
-                <ProgressBar Value="{Binding ProgressPercent}" Foreground="LightGray" Width="150"/>
+                <ProgressBar
+                    Width="150"
+                    Foreground="LightGray"
+                    Visibility="{Binding Value, RelativeSource={RelativeSource Self}, Converter={StaticResource ValueToVisibilityConverter}}"
+                    Value="{Binding ProgressPercent}" />
             </StatusBarItem>
         </StatusBar>
 
