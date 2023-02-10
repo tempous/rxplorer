@@ -1,11 +1,10 @@
 ﻿<ui:UiWindow
     x:Class="LiteExplorer.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:c="clr-namespace:LiteExplorer.Converters"
-    xmlns:uc="clr-namespace:LiteExplorer.Controls"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    xmlns:vm="clr-namespace:LiteExplorer.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uc="clr-namespace:LiteExplorer.Controls"
+    xmlns:c="clr-namespace:LiteExplorer.Converters"
     Width="1000"
     Height="600"
     ExtendsContentIntoTitleBar="True"
@@ -13,9 +12,9 @@
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen">
 
-    <ui:UiWindow.DataContext>
+    <!--<ui:UiWindow.DataContext>
         <vm:MainWindowViewModel />
-    </ui:UiWindow.DataContext>
+    </ui:UiWindow.DataContext>-->
 
     <ui:UiWindow.InputBindings>
         <KeyBinding
