@@ -160,8 +160,8 @@
                         <ProgressBar
                             x:Name="usedPercent"
                             Grid.Column="6"
-                            Background="{Binding Value, RelativeSource={RelativeSource Self}, Converter={StaticResource PercentToColorConverter}}"
-                            Foreground="Gray">
+                            Background="Gray"
+                            Foreground="{Binding Value, RelativeSource={RelativeSource Self}, Converter={StaticResource PercentToColorConverter}}">
                             <ProgressBar.Value>
                                 <MultiBinding Converter="{StaticResource UsedPercentConverter}">
                                     <Binding Path="TotalSpace" />
