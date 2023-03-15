@@ -5,6 +5,12 @@
     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:c="clr-namespace:LiteExplorer.Converters"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+    <UserControl.InputBindings>
+        <KeyBinding Command="{Binding RunCmd}"
+                    CommandParameter="cmd"
+                    Modifiers="Ctrl"
+                    Key="Oem3" />
+    </UserControl.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -35,7 +41,7 @@
                 Command="{Binding RunCmd}"
                 CommandParameter="cmd"
                 Icon="Send28"
-                ToolTip="Command prompt" />
+                ToolTip="Command prompt (Ctrl+`)" />
         </Grid>
 
         <ListView
