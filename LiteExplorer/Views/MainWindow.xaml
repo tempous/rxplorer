@@ -35,9 +35,9 @@
     <DockPanel>
         <ui:TitleBar
             Title="{Binding Title}"
-            Padding="1"
+            Padding="5"
             DockPanel.Dock="Top"
-            Icon="pack://application:,,,/../wpfui.ico"
+            Icon="pack://application:,,,/../app.ico"
             UseSnapLayout="True" />
 
         <StatusBar
