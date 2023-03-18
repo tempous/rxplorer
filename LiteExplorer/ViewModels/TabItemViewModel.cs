@@ -44,6 +44,16 @@ namespace LiteExplorer.ViewModels
         }
         #endregion
 
+        #region CurrentCommand
+        private string currentCommand;
+
+        public string CurrentCommand
+        {
+            get => currentCommand;
+            set => SetValue(ref currentCommand, value);
+        }
+        #endregion
+
         #region CurrentItem
         private FileSystemObject currentItem;
 
@@ -73,7 +83,7 @@ namespace LiteExplorer.ViewModels
         #region Run
         public ICommand RunCmd { get; }
         private bool CanRunCmdExecute(object p) => true;
-        private void OnRunCmdExecuted(object p) => Process.Start(new ProcessStartInfo(p.ToString()) { WorkingDirectory = CurrentPath ?? Environment.SystemDirectory });
+        private void OnRunCmdExecuted(object p) => Process.Start(new ProcessStartInfo("cmd", $"/k {p}") { WorkingDirectory = CurrentPath ?? Environment.SystemDirectory });
         #endregion
 
         #region Open
@@ -81,23 +91,43 @@ namespace LiteExplorer.ViewModels
         private bool CanOpenCmdExecute(object p) => true;
         private void OnOpenCmdExecuted(object p)
         {
-            if (p is FileSystemObject fso)
-            {
-                if (File.Exists(fso.Path))
-                {
-                    Process.Start(new ProcessStartInfo(fso.Path) { UseShellExecute = true });
-                    return;
-                }
-
-                CurrentName = fso.Name;
-                CurrentPath = fso.Path;
-            }
-
             if (p is string path && path.Length > 0)
             {
-                CurrentName = Directory.GetParent(path)?.Name;
-                CurrentPath = Directory.GetParent(path)?.FullName;
+                if (File.Exists(path))
+                {
+                    Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+                    return;
+                }
+                else if (Directory.Exists(path))
+                {
+                    var directory = new DirectoryInfo(path);
+                    CurrentName = directory.Name;
+                    CurrentPath = directory.FullName;
+                }
+                else
+                {
+                    Process.Start(new ProcessStartInfo($"https://www.google.com/?q={Uri.EscapeDataString(path)}") { UseShellExecute = true });
+                    //Process.Start(new ProcessStartInfo("https://www.google.com/") { UseShellExecute = true });
+                    return;
+                }
             }
+            //if (p is FileSystemObject fso)
+            //{
+            //    if (File.Exists(fso.Path))
+            //    {
+            //        Process.Start(new ProcessStartInfo(fso.Path) { UseShellExecute = true });
+            //        return;
+            //    }
+
+            //    CurrentName = fso.Name;
+            //    CurrentPath = fso.Path;
+            //}
+
+            //if (p is string path && path.Length > 0)
+            //{
+            //    CurrentName = Directory.GetParent(path)?.Name;
+            //    CurrentPath = Directory.GetParent(path)?.FullName;
+            //}
 
             if (worker.IsBusy)
                 worker.CancelAsync();
@@ -110,7 +140,21 @@ namespace LiteExplorer.ViewModels
         #region Back
         public ICommand BackCmd { get; }
         private bool CanBackCmdExecute(object p) => p != null;
-        private void OnBackCmdExecuted(object p) => OpenCmd.Execute(p);
+        private void OnBackCmdExecuted(object p)
+        {
+            //OpenCmd.Execute(p);
+
+            if (p is string path && path.Length > 0)
+            {
+                CurrentName = Directory.GetParent(path)?.Name;
+                CurrentPath = Directory.GetParent(path)?.FullName;
+            }
+
+            if (worker.IsBusy)
+                worker.CancelAsync();
+            else
+                OpenPath();
+        }
         #endregion
 
         #region ShowMessage
