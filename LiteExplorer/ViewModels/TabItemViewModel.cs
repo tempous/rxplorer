@@ -91,24 +91,32 @@ namespace LiteExplorer.ViewModels
         private bool CanOpenCmdExecute(object p) => true;
         private void OnOpenCmdExecuted(object p)
         {
-            if (p is string path && path.Length > 0)
+            if (p is string path)
             {
-                if (File.Exists(path))
+                if (path?.Length == 0)
                 {
-                    Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
-                    return;
-                }
-                else if (Directory.Exists(path))
-                {
-                    var directory = new DirectoryInfo(path);
-                    CurrentName = directory.Name;
-                    CurrentPath = directory.FullName;
+                    CurrentPath = null;
+                    CurrentName = null;
                 }
                 else
                 {
-                    Process.Start(new ProcessStartInfo($"https://www.google.com/?q={Uri.EscapeDataString(path)}") { UseShellExecute = true });
-                    //Process.Start(new ProcessStartInfo("https://www.google.com/") { UseShellExecute = true });
-                    return;
+                    if (File.Exists(path))
+                    {
+                        Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+                        return;
+                    }
+                    else if (Directory.Exists(path))
+                    {
+                        var directory = new DirectoryInfo(path);
+                        CurrentPath = directory.FullName;
+                        CurrentName = directory.Name;
+                    }
+                    else
+                    {
+                        Process.Start(new ProcessStartInfo($"https://www.google.com/?q={Uri.EscapeDataString(path)}") { UseShellExecute = true });
+                        //Process.Start(new ProcessStartInfo("https://www.google.com/") { UseShellExecute = true });
+                        return;
+                    }
                 }
             }
             //if (p is FileSystemObject fso)
