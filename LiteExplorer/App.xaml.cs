@@ -1,32 +1,28 @@
-﻿using LiteExplorer.ViewModels;
+﻿using LiteExplorer.MVVM.ViewModels;
+using LiteExplorer.MVVM.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
-namespace LiteExplorer
+namespace LiteExplorer;
+
+public partial class App
 {
-    public partial class App
+    private readonly ServiceProvider serviceProvider;
+
+    public App()
     {
-        private readonly ServiceProvider serviceProvider;
+        IServiceCollection services = new ServiceCollection();
+        services.AddSingleton<MainWindowViewModel>();
+        services.AddSingleton<MainWindow>();
 
-        public App()
-        {
-            IServiceCollection services = new ServiceCollection();
-            services.AddSingleton<MainWindowViewModel>();
-            services.AddSingleton<MainWindow>(/*provider => new()
-            {
-                DataContext = provider.GetRequiredService<MainWindowViewModel>()
-            }*/);
+        serviceProvider = services.BuildServiceProvider();
+    }
 
-            serviceProvider = services.BuildServiceProvider();
-        }
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        var mainWindow = serviceProvider.GetRequiredService<MainWindow>();
+        mainWindow.Show();
 
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            var mainWindow = serviceProvider.GetRequiredService<MainWindow>();
-            mainWindow.DataContext = serviceProvider.GetRequiredService<MainWindowViewModel>();
-            mainWindow.Show();
-
-            base.OnStartup(e);
-        }
+        base.OnStartup(e);
     }
 }

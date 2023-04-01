@@ -1,0 +1,182 @@
+﻿<UserControl x:Class="LiteExplorer.MVVM.Views.UserControls.TabContent"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:LiteExplorer.Infrastructure.Converters">
+
+    <UserControl.InputBindings>
+        <KeyBinding Command="{Binding RunCmd}"
+                    Modifiers="Ctrl"
+                    Key="Oem3" />
+    </UserControl.InputBindings>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <ui:Button Grid.Column="0"
+                       Height="{Binding ActualWidth, RelativeSource={RelativeSource Self}}"
+                       Command="{Binding BackCmd}"
+                       CommandParameter="{Binding TabPath}"
+                       Icon="ArrowLeft28"
+                       ToolTip="Back (Backspace)" />
+
+            <ui:TextBox Grid.Column="1"
+                        HorizontalContentAlignment="Stretch"
+                        Icon="Open28"
+                        Text="{Binding TabPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+
+                <ui:TextBox.InputBindings>
+                    <KeyBinding Gesture="Enter"
+                                Command="{Binding OpenCmd}"
+                                CommandParameter="{Binding TabPath}" />
+                </ui:TextBox.InputBindings>
+            </ui:TextBox>
+
+            <ui:Button Grid.Column="2"
+                       Height="{Binding ActualWidth, RelativeSource={RelativeSource Self}}"
+                       Command="{Binding OpenCmd}"
+                       CommandParameter="{Binding TabPath}"
+                       Icon="Open28"
+                       ToolTip="Open path (F5)" />
+
+            <ui:TextBox Grid.Column="3"
+                        HorizontalContentAlignment="Stretch"
+                        Icon="Send28"
+                        Text="{Binding TabCommand, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}">
+
+                <ui:TextBox.InputBindings>
+                    <KeyBinding Gesture="Enter"
+                                Command="{Binding RunCmd}"
+                                CommandParameter="{Binding TabCommand}" />
+                </ui:TextBox.InputBindings>
+            </ui:TextBox>
+
+            <ui:Button Grid.Column="4"
+                       Height="{Binding ActualWidth, RelativeSource={RelativeSource Self}}"
+                       Command="{Binding RunCmd}"
+                       CommandParameter="{Binding TabCommand}"
+                       Icon="Send28"
+                       ToolTip="Command prompt (Ctrl+`)" />
+        </Grid>
+
+        <ListView x:Name="items"
+                  Grid.Row="1"
+                  ItemsSource="{Binding FileSystemObjects}"
+                  SelectedItem="{Binding CurrentFileSystemObject}"
+                  SelectionMode="Extended"
+                  VirtualizingPanel.CacheLength="5"
+                  VirtualizingPanel.CacheLengthUnit="Item"
+                  VirtualizingPanel.ScrollUnit="Pixel"
+                  VirtualizingPanel.VirtualizationMode="Recycling">
+
+            <ListView.Resources>
+                <ContextMenu x:Key="ItemContextMenu">
+                    <MenuItem Command="{Binding DataContext.OpenCmd, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ListView}, Path=SelectedItem.Path}"
+                              Header="Open" />
+                </ContextMenu>
+            </ListView.Resources>
+
+            <ListView.ItemContainerStyle>
+                <Style BasedOn="{StaticResource {x:Type ListViewItem}}"
+                       TargetType="{x:Type ListViewItem}">
+                    <Setter Property="ContextMenu"
+                            Value="{StaticResource ItemContextMenu}" />
+                </Style>
+            </ListView.ItemContainerStyle>
+
+            <ListView.InputBindings>
+                <KeyBinding Command="{Binding OpenCmd}"
+                            CommandParameter="{Binding CurrentFileSystemObject.Path}"
+                            Gesture="Enter" />
+                <KeyBinding Command="{Binding OpenCmd}"
+                            CommandParameter="{Binding CurrentFileSystemObject.Path}"
+                            Gesture="Space" />
+                <KeyBinding Command="{Binding BackCmd}"
+                            CommandParameter="{Binding TabPath}"
+                            Gesture="Backspace" />
+            </ListView.InputBindings>
+
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <DataTemplate.Resources>
+                        <c:UsedPercent x:Key="UsedPercentConverter" />
+                        <c:BytesToNormalSize x:Key="BytesToNormalSizeConverter" />
+                        <c:PercentToColor x:Key="PercentToColorConverter" />
+                    </DataTemplate.Resources>
+
+                    <Grid>
+                        <Grid.InputBindings>
+                            <MouseBinding Command="{Binding DataContext.OpenCmd, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                          CommandParameter="{Binding DataContext.CurrentFileSystemObject.Path, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                          Gesture="LeftDoubleClick" />
+                        </Grid.InputBindings>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="5*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="2*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Column="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Column="0"
+                                   Margin="0,0,5,3"
+                                   Source="{Binding Image}" />
+                            <TextBlock Grid.Column="1">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0} ({1})">
+                                        <Binding Path="Name" />
+                                        <Binding Path="Path" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </Grid>
+                        <Label Grid.Column="1"
+                               Content="{Binding Format}" />
+                        <Label Grid.Column="2"
+                               Content="{Binding Type}" />
+                        <Label Grid.Column="3"
+                               Content="{Binding TotalSpace, Converter={StaticResource BytesToNormalSizeConverter}}" />
+                        <Label Grid.Column="4"
+                               Content="{Binding Size, Converter={StaticResource BytesToNormalSizeConverter}}"
+                               Foreground="{Binding Foreground, ElementName=usedPercent}" />
+                        <Label Grid.Column="5"
+                               Content="{Binding FreeSpace, Converter={StaticResource BytesToNormalSizeConverter}}"
+                               Foreground="{Binding Background, ElementName=usedPercent}" />
+                        <ProgressBar x:Name="usedPercent"
+                                     Grid.Column="6"
+                                     Background="{Binding Value, RelativeSource={RelativeSource Self}, Converter={StaticResource PercentToColorConverter}}"
+                                     Foreground="Gray">
+                            <ProgressBar.Value>
+                                <MultiBinding Converter="{StaticResource UsedPercentConverter}">
+                                    <Binding Path="TotalSpace" />
+                                    <Binding Path="Size" />
+                                </MultiBinding>
+                            </ProgressBar.Value>
+                        </ProgressBar>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</UserControl>
