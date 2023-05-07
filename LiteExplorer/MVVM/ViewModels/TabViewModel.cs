@@ -109,35 +109,32 @@ internal class TabViewModel : ViewModel, IDisposable
 
     private void OnOpenCmdExecuted(object p)
     {
-        if (p is string path)
+        string path = p?.ToString();
+
+        if (path is null || Directory.Exists(path))
         {
-            if (path?.Length == 0)
-            {
-                TabPath = null;
-            }
+            TabPath = path;
+
+            if (worker.IsBusy)
+                worker.CancelAsync();
             else
+                OpenPath();
+        }
+        else if (File.Exists(path))
+        {
+            try
             {
-                if (File.Exists(path))
-                {
-                    Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
-                    return;
-                }
-                else if (Directory.Exists(path))
-                {
-                    TabPath = path;
-                }
-                else
-                {
-                    Process.Start(new ProcessStartInfo($"https://www.google.com/?q={Uri.EscapeDataString(path)}") { UseShellExecute = true });
-                    return;
-                }
+                Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+            }
+            catch (Win32Exception ex)
+            {
+                MessageBox.Show(ex.Message, $"Error: {ex.NativeErrorCode}", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
-        if (worker.IsBusy)
-            worker.CancelAsync();
         else
-            OpenPath();
+        {
+            Process.Start(new ProcessStartInfo($"https://www.google.com/?q={Uri.EscapeDataString(path)}") { UseShellExecute = true });
+        }
     }
 
     #endregion
@@ -240,32 +237,39 @@ internal class TabViewModel : ViewModel, IDisposable
         }
         else
         {
-            var entryCount = new DirectoryInfo(TabPath).EnumerateFileSystemInfos().Count();
-
-            foreach (var item in Directory.EnumerateFileSystemEntries(TabPath))
+            try
             {
-                if (worker.CancellationPending)
-                {
-                    e.Cancel = true;
-                    return;
-                }
+                var entryCount = new DirectoryInfo(TabPath).EnumerateFileSystemInfos().Count();
 
-                var fileExists = File.Exists(item);
-
-                Application.Current.Dispatcher.Invoke(() =>
+                foreach (var item in Directory.EnumerateFileSystemEntries(TabPath))
                 {
-                    FileSystemObjects.Add(new FileSystemObject()
+                    if (worker.CancellationPending)
                     {
-                        Image = fileExists
-                            ? FileManager.GetImageSource(item)
-                            : FolderManager.GetImageSource(item, ItemState.Undefined),
-                        Name = Path.GetFileName(item),
-                        Path = item,
-                        Size = fileExists ? new FileInfo(item).Length : 0
-                    });
+                        e.Cancel = true;
+                        return;
+                    }
 
-                    worker.ReportProgress((int)((double)FileSystemObjects.Count / entryCount * 100));
-                }, DispatcherPriority.Background);
+                    var fileExists = File.Exists(item);
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        FileSystemObjects.Add(new FileSystemObject()
+                        {
+                            Image = fileExists
+                                ? FileManager.GetImageSource(item)
+                                : FolderManager.GetImageSource(item, ItemState.Undefined),
+                            Name = Path.GetFileName(item),
+                            Path = item,
+                            Size = fileExists ? new FileInfo(item).Length : 0
+                        });
+
+                        worker.ReportProgress((int)((double)FileSystemObjects.Count / entryCount * 100));
+                    }, DispatcherPriority.Background);
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                MessageBox.Show(ex.Message, "Access denied", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
