@@ -44,15 +44,7 @@ internal class TabViewModel : ViewModel, IDisposable
     public string TabPath
     {
         get => tabPath;
-        set
-        {
-            SetValue(ref tabPath, value);
-
-            var name = Path.GetFileName(tabPath);
-            if (name?.Length == 0) name = tabPath;
-
-            TabTitle = name;
-        }
+        set => SetValue(ref tabPath, value);
     }
 
     #endregion
@@ -205,9 +197,14 @@ internal class TabViewModel : ViewModel, IDisposable
 
     private void OpenPath()
     {
+        TabTitle = TabPath != null && Path.GetPathRoot(TabPath) == TabPath
+            ? GetDriveLabel(new DriveInfo(TabPath))
+            : Path.GetFileName(TabPath);
         FileSystemObjects.Clear();
         worker.RunWorkerAsync();
     }
+
+    private string GetDriveLabel(DriveInfo drive) => $"{(drive.VolumeLabel != "" ? drive.VolumeLabel : "Local drive")} ({drive.Name})";
 
     private void worker_DoWork(object sender, DoWorkEventArgs e)
     {
@@ -228,7 +225,7 @@ internal class TabViewModel : ViewModel, IDisposable
                     FileSystemObjects.Add(new FileSystemObject()
                     {
                         Image = FolderManager.GetImageSource(drive.RootDirectory.FullName, ItemState.Undefined),
-                        Name = drive.VolumeLabel,
+                        Name = GetDriveLabel(drive),
                         Path = drive.Name,
                         TotalSpace = drive.TotalSize,
                         FreeSpace = drive.TotalFreeSpace,

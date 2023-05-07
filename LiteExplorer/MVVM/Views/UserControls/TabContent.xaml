@@ -142,14 +142,7 @@
                             <Image Grid.Column="0"
                                    Margin="0,0,5,3"
                                    Source="{Binding Image}" />
-                            <TextBlock Grid.Column="1">
-                                <TextBlock.Text>
-                                    <MultiBinding StringFormat="{}{0} ({1})">
-                                        <Binding Path="Name" />
-                                        <Binding Path="Path" />
-                                    </MultiBinding>
-                                </TextBlock.Text>
-                            </TextBlock>
+                            <TextBlock Grid.Column="1" Text="{Binding Name}"/>
                         </Grid>
                         <Label Grid.Column="1"
                                Content="{Binding Format}" />
