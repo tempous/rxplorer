@@ -240,7 +240,7 @@ internal class TabContentViewModel : ViewModel, IDisposable
             {
                 var entryCount = new DirectoryInfo(TabPath).EnumerateFileSystemInfos().Count();
 
-                foreach (var item in Directory.EnumerateFileSystemEntries(TabPath))
+                foreach (var directory in Directory.EnumerateDirectories(TabPath))
                 {
                     if (worker.CancellationPending)
                     {
@@ -248,18 +248,36 @@ internal class TabContentViewModel : ViewModel, IDisposable
                         return;
                     }
 
-                    var fileExists = File.Exists(item);
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        FileSystemObjects.Add(new FileSystemObject()
+                        {
+                            Image = FolderManager.GetImageSource(directory, ItemState.Undefined),
+                            Name = Path.GetFileName(directory),
+                            Path = directory,
+                            Size = 0
+                        });
+
+                        worker.ReportProgress((int)((double)FileSystemObjects.Count / entryCount * 100));
+                    }, DispatcherPriority.Background);
+                }
+
+                foreach (var file in Directory.EnumerateFiles(TabPath))
+                {
+                    if (worker.CancellationPending)
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
 
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         FileSystemObjects.Add(new FileSystemObject()
                         {
-                            Image = fileExists
-                                ? FileManager.GetImageSource(item)
-                                : FolderManager.GetImageSource(item, ItemState.Undefined),
-                            Name = Path.GetFileName(item),
-                            Path = item,
-                            Size = fileExists ? new FileInfo(item).Length : 0
+                            Image = FileManager.GetImageSource(file),
+                            Name = Path.GetFileName(file),
+                            Path = file,
+                            Size = new FileInfo(file).Length
                         });
 
                         worker.ReportProgress((int)((double)FileSystemObjects.Count / entryCount * 100));
