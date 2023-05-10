@@ -11,6 +11,7 @@
              mc:Ignorable="d"
              Width="1000"
              Height="600"
+             Title="{Binding CurrentTab.TabTitle, TargetNullValue='Home'}"
              ExtendsContentIntoTitleBar="True"
              WindowBackdropType="Mica"
              WindowCornerPreference="Round"
