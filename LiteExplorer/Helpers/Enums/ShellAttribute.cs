@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LiteExplorer.Extensions.Enums;
+namespace LiteExplorer.Helpers.Enums;
 
 [Flags]
 public enum ShellAttribute : uint

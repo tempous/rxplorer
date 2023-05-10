@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace LiteExplorer.Extensions.WinAPI;
+namespace LiteExplorer.Helpers.WinAPI;
 
 [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
 public struct ShellFileInfo

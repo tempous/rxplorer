@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace LiteExplorer.Extensions.WinAPI;
+namespace LiteExplorer.Helpers.WinAPI;
 
 public static class Interop
 {

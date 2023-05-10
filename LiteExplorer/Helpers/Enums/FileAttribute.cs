@@ -1,4 +1,4 @@
-﻿namespace LiteExplorer.Extensions.Enums;
+﻿namespace LiteExplorer.Helpers.Enums;
 
 public enum FileAttribute : uint
 {

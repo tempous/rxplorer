@@ -1,9 +1,9 @@
-﻿using LiteExplorer.Extensions.Enums;
+﻿using LiteExplorer.Helpers.Enums;
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace LiteExplorer.Extensions.WinAPI;
+namespace LiteExplorer.Helpers.WinAPI;
 
 public class ShellManager
 {

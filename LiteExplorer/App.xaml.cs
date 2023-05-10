@@ -1,5 +1,4 @@
-﻿using LiteExplorer.MVVM.ViewModels;
-using LiteExplorer.MVVM.Views.Windows;
+﻿using LiteExplorer.MVVM.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 

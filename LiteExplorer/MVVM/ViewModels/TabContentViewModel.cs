@@ -1,5 +1,5 @@
-﻿using LiteExplorer.Extensions;
-using LiteExplorer.Extensions.Enums;
+﻿using LiteExplorer.Helpers;
+using LiteExplorer.Helpers.Enums;
 using LiteExplorer.Infrastructure.Commands;
 using LiteExplorer.MVVM.Models;
 using LiteExplorer.MVVM.ViewModels.Base;
