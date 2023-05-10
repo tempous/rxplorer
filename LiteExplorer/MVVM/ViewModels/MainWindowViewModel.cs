@@ -25,9 +25,9 @@ internal class MainWindowViewModel : ViewModel
 
     #region CurrentTab
 
-    private TabViewModel currentTab;
+    private TabContentViewModel currentTab;
 
-    public TabViewModel CurrentTab
+    public TabContentViewModel CurrentTab
     {
         get => currentTab;
         set => SetValue(ref currentTab, value);
@@ -35,7 +35,7 @@ internal class MainWindowViewModel : ViewModel
 
     #endregion
 
-    public ObservableCollection<TabViewModel> Tabs { get; set; } = new();
+    public ObservableCollection<TabContentViewModel> Tabs { get; set; } = new();
 
     #endregion
 
@@ -59,7 +59,7 @@ internal class MainWindowViewModel : ViewModel
 
     private void OnAddTabCmdExecuted(object p)
     {
-        var newTab = new TabViewModel();
+        var newTab = new TabContentViewModel();
         Tabs.Add(newTab);
         CurrentTab = newTab;
     }
@@ -74,7 +74,7 @@ internal class MainWindowViewModel : ViewModel
 
     private void OnCloseTabCmdExecuted(object p)
     {
-        if (p is TabViewModel closeTab)
+        if (p is TabContentViewModel closeTab)
         {
             closeTab.Dispose();
             Tabs.Remove(closeTab);
@@ -90,7 +90,7 @@ internal class MainWindowViewModel : ViewModel
 
     public MainWindowViewModel()
     {
-        Tabs.Add(new TabViewModel());
+        Tabs.Add(new TabContentViewModel());
         CurrentTab = Tabs.First();
 
         CloseAppCmd = new ActionCommand(OnCloseAppCmdExecuted, CanCloseAppCmdExecute);

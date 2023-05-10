@@ -15,7 +15,7 @@ using System.Windows.Threading;
 
 namespace LiteExplorer.MVVM.ViewModels;
 
-internal class TabViewModel : ViewModel, IDisposable
+internal class TabContentViewModel : ViewModel, IDisposable
 {
     #region Private fields
 
@@ -161,7 +161,7 @@ internal class TabViewModel : ViewModel, IDisposable
 
     #region Constructor
 
-    public TabViewModel(string path = null)
+    public TabContentViewModel()
     {
         worker = new BackgroundWorker
         {
@@ -177,7 +177,7 @@ internal class TabViewModel : ViewModel, IDisposable
         OpenCmd = new ActionCommand(OnOpenCmdExecuted, CanOpenCmdExecute);
         BackCmd = new ActionCommand(OnBackCmdExecuted, CanBackCmdExecute);
 
-        OpenCmd.Execute(path);
+        OpenCmd.Execute(TabPath);
     }
 
     public void Dispose()

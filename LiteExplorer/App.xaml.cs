@@ -12,7 +12,6 @@ public partial class App
     public App()
     {
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<MainWindowViewModel>();
         services.AddSingleton<MainWindow>();
 
         serviceProvider = services.BuildServiceProvider();
