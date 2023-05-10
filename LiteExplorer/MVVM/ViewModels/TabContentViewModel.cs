@@ -115,10 +115,7 @@ internal class TabContentViewModel : ViewModel, IDisposable
         {
             TabPath = path;
 
-            if (worker.IsBusy)
-                worker.CancelAsync();
-            else
-                OpenPath();
+            OpenTabPath();
         }
         else if (File.Exists(path))
         {
@@ -149,10 +146,7 @@ internal class TabContentViewModel : ViewModel, IDisposable
     {
         TabPath = Directory.GetParent(p.ToString())?.FullName;
 
-        if (worker.IsBusy)
-            worker.CancelAsync();
-        else
-            OpenPath();
+        OpenTabPath();
     }
 
     #endregion
@@ -192,13 +186,18 @@ internal class TabContentViewModel : ViewModel, IDisposable
 
     #region Private methods
 
-    private void OpenPath()
+    private void OpenTabPath()
     {
-        TabTitle = TabPath != null && Path.GetPathRoot(TabPath) == TabPath
+        if (worker.IsBusy)
+            worker.CancelAsync();
+        else
+        {
+            TabTitle = TabPath != null && Path.GetPathRoot(TabPath) == TabPath
             ? GetDriveLabel(new DriveInfo(TabPath))
             : Path.GetFileName(TabPath);
-        FileSystemObjects.Clear();
-        worker.RunWorkerAsync();
+            FileSystemObjects.Clear();
+            worker.RunWorkerAsync();
+        }
     }
 
     private string GetDriveLabel(DriveInfo drive) => $"{(drive.VolumeLabel != "" ? drive.VolumeLabel : "Local drive")} ({drive.Name})";
@@ -281,7 +280,7 @@ internal class TabContentViewModel : ViewModel, IDisposable
 
     private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
     {
-        if (e.Cancelled) OpenPath();
+        if (e.Cancelled) OpenTabPath();
     }
 
     #endregion
