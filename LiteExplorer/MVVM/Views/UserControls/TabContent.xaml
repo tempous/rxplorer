@@ -33,7 +33,6 @@
             <ui:Button Grid.Column="0"
                        Height="{Binding ActualWidth, RelativeSource={RelativeSource Self}}"
                        Command="{Binding BackCmd}"
-                       CommandParameter="{Binding TabPath}"
                        Icon="ArrowLeft28"
                        ToolTip="Back (Backspace)" />
 
@@ -110,7 +109,6 @@
                             CommandParameter="{Binding CurrentFileSystemObject.Path}"
                             Gesture="Space" />
                 <KeyBinding Command="{Binding BackCmd}"
-                            CommandParameter="{Binding TabPath}"
                             Gesture="Backspace" />
             </ListView.InputBindings>
 

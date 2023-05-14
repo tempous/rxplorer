@@ -44,7 +44,12 @@ internal class TabContentViewModel : ViewModel, IDisposable
     public string TabPath
     {
         get => tabPath;
-        set => SetValue(ref tabPath, value);
+        set
+        {
+            value = value?.Trim();
+            if (value == "") value = null;
+            SetValue(ref tabPath, value);
+        }
     }
 
     #endregion
@@ -140,12 +145,11 @@ internal class TabContentViewModel : ViewModel, IDisposable
 
     public ICommand BackCmd { get; }
 
-    private bool CanBackCmdExecute(object p) => p != null;
+    private bool CanBackCmdExecute(object p) => TabPath != null;
 
     private void OnBackCmdExecuted(object p)
     {
-        TabPath = Directory.GetParent(p.ToString())?.FullName;
-
+        TabPath = Path.GetDirectoryName(TabPath);
         OpenTabPath();
     }
 
