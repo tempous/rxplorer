@@ -1,5 +1,6 @@
 ﻿using LiteExplorer.Infrastructure.Commands;
 using LiteExplorer.MVVM.ViewModels.Base;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -59,9 +60,8 @@ internal class MainWindowViewModel : ViewModel
 
     private void OnAddTabCmdExecuted(object p)
     {
-        var newTab = new TabContentViewModel();
-        Tabs.Add(newTab);
-        CurrentTab = newTab;
+        Tabs.Add(App.Container.GetService<TabContentViewModel>());
+        CurrentTab = Tabs.Last();
     }
 
     #endregion
@@ -90,7 +90,7 @@ internal class MainWindowViewModel : ViewModel
 
     public MainWindowViewModel()
     {
-        Tabs.Add(new TabContentViewModel());
+        Tabs.Add(App.Container.GetService<TabContentViewModel>());
         CurrentTab = Tabs.First();
 
         CloseAppCmd = new ActionCommand(OnCloseAppCmdExecuted, CanCloseAppCmdExecute);
