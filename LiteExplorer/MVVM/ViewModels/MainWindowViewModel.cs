@@ -46,8 +46,6 @@ internal class MainWindowViewModel : ViewModel
 
     public ICommand CloseAppCmd { get; }
 
-    private bool CanCloseAppCmdExecute(object p) => true;
-
     private void OnCloseAppCmdExecuted(object p) => Application.Current.Shutdown();
 
     #endregion
@@ -55,8 +53,6 @@ internal class MainWindowViewModel : ViewModel
     #region AddTab
 
     public ICommand AddTabCmd { get; }
-
-    private bool CanAddTabCmdExecute(object p) => true;
 
     private void OnAddTabCmdExecuted(object p)
     {
@@ -93,8 +89,8 @@ internal class MainWindowViewModel : ViewModel
         Tabs.Add(App.Container.GetService<TabContentViewModel>());
         CurrentTab = Tabs.First();
 
-        CloseAppCmd = new ActionCommand(OnCloseAppCmdExecuted, CanCloseAppCmdExecute);
-        AddTabCmd = new ActionCommand(OnAddTabCmdExecuted, CanAddTabCmdExecute);
+        CloseAppCmd = new ActionCommand(OnCloseAppCmdExecuted);
+        AddTabCmd = new ActionCommand(OnAddTabCmdExecuted);
         CloseTabCmd = new ActionCommand(OnCloseTabCmdExecuted, CanCloseTabCmdExecute);
     }
 

@@ -100,8 +100,6 @@ internal class TabContentViewModel : ViewModel, IDisposable
 
     public ICommand RunCmd { get; }
 
-    private bool CanRunCmdExecute(object p) => true;
-
     private void OnRunCmdExecuted(object p) => Process.Start(new ProcessStartInfo("cmd", $"/k {p}") { WorkingDirectory = TabPath ?? Environment.SystemDirectory });
 
     #endregion
@@ -109,8 +107,6 @@ internal class TabContentViewModel : ViewModel, IDisposable
     #region Open
 
     public ICommand OpenCmd { get; }
-
-    private bool CanOpenCmdExecute(object p) => true;
 
     private void OnOpenCmdExecuted(object p)
     {
@@ -171,8 +167,8 @@ internal class TabContentViewModel : ViewModel, IDisposable
         worker.ProgressChanged += worker_ProgressChanged;
         worker.RunWorkerCompleted += worker_RunWorkerCompleted;
 
-        RunCmd = new ActionCommand(OnRunCmdExecuted, CanRunCmdExecute);
-        OpenCmd = new ActionCommand(OnOpenCmdExecuted, CanOpenCmdExecute);
+        RunCmd = new ActionCommand(OnRunCmdExecuted);
+        OpenCmd = new ActionCommand(OnOpenCmdExecuted);
         BackCmd = new ActionCommand(OnBackCmdExecuted, CanBackCmdExecute);
 
         OpenCmd.Execute(TabPath);
